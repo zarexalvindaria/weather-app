@@ -30,9 +30,9 @@ def search():
 
     # Search by the appropriate query, either city name or zip
     if search_method.get() == 1:
-        querystring = {"q": city_entry.get(), "appid": api_key}
+        querystring = {"q": city_entry.get(), "appid": api_key, 'units': 'imperial'}
     elif search_method.get() == 2:
-        querystring = {"zip": city_entry.get(), "appid": api_key}
+        querystring = {"zip": city_entry.get(), "appid": api_key, 'units': 'imperial'}
 
     # Call API
     response = requests.request("GET", url, params=querystring)
@@ -54,8 +54,8 @@ def get_weather():
     """Grab information from API response and update our weather labels."""
     # Gather the data to be used from the API response
     city_name = response['name']
-    city_lat = str(response['coord']['lat'])
-    city_lon = str(response['coord']['lon'])
+    city_lat = str(round(response['coord']['lat'],2))
+    city_lon = str(round(response['coord']['lon'],2))
 
     main_waather = response['weather'][0]['main']
     description = response['weather'][0]['description']
@@ -65,6 +65,15 @@ def get_weather():
     temp_min = str(response['main']['temp_min'])
     temp_max = str(response['main']['temp_max'])
     humidity = str(response['main']['humidity'])
+
+    # Update output labels
+    city_info_label.config(text=city_name + "(" + city_lat + ", " + city_lon + ")", font=large_font, bg=output_color)
+    weather_label.config(text="Weather" + main_waather + ", " + description, font=small_font, bg=output_color)
+    temp_label.config(text="Temperature: " + temp + " F", font=small_font, bg=output_color)
+    feels_label.config(text="Feels Like:" + feels_like + " F", font=small_font, bg=output_color)
+    temp_min_label.config(text="Min Temperature: " + temp_min + " F", font=small_font, bg=output_color)
+    temp_max_label.config(text="Max Temperature: " + temp_max + " F", font=small_font, bg=output_color)
+    humidity_label.config(text="Humidity: " + humidity, font=small_font, bg=output_color)
 
 
 # GUI layout
