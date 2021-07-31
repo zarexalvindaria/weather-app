@@ -2,6 +2,8 @@
 
 import requests, tkinter as tk
 from tkinter import BOTH, IntVar
+from PIL import ImageTk, Image
+from io import BytesIO
 
 # Define window
 root = tk.Tk()
@@ -49,6 +51,7 @@ def search():
      'timezone': -14400, 'id': 4930956, 'name': 'Boston', 'cod': 200}
     """
     get_weather()
+    get_icon()
 
 def get_weather():
     """Grab information from API response and update our weather labels."""
@@ -75,6 +78,25 @@ def get_weather():
     temp_max_label.config(text="Max Temperature: " + temp_max + " F", font=small_font, bg=output_color)
     humidity_label.config(text="Humidity: " + humidity, font=small_font, bg=output_color)
 
+def get_icon():
+    """Get the appropriate icon from API response"""
+    global img
+
+    # Get the icon id from API response
+    icon_id = response['weather'][0]['icon']
+
+    # Get the icon from the correct website
+    url = "http://openweathermap.org/img/wn/{icon}.png".format(icon=icon_id)
+
+    # Make a request at the url to download the icon; stream=True automatically dl
+    icon_response = requests.get(url,stream=True)
+
+    # Turn into a form tkinter/python can use
+    img_data = icon_response.content
+    img = ImageTk.PhotoImage(Image.open(BytesIO(img_data)))
+
+    photo_label.config(image=img)
+
 
 # GUI layout
 # Create frames
@@ -90,14 +112,14 @@ output_frame.pack_propagate(0)
 input_frame.pack(pady=15)
 
 # Output frame layout
-city_info_label = tk.Label(output_frame, bg=output_color, text="Testing")
-weather_label = tk.Label(output_frame, bg=output_color, text="Testing")
-temp_label = tk.Label(output_frame, bg=output_color, text="Testing")
-feels_label = tk.Label(output_frame, bg=output_color, text="Testing")
-temp_min_label = tk.Label(output_frame, bg=output_color, text="Testing")
-temp_max_label = tk.Label(output_frame, bg=output_color, text="Testing")
-humidity_label = tk.Label(output_frame, bg=output_color, text="Testing")
-photo_label = tk.Label(output_frame, bg=output_color, text="Testing")
+city_info_label = tk.Label(output_frame, bg=output_color)
+weather_label = tk.Label(output_frame, bg=output_color)
+temp_label = tk.Label(output_frame, bg=output_color)
+feels_label = tk.Label(output_frame, bg=output_color)
+temp_min_label = tk.Label(output_frame, bg=output_color)
+temp_max_label = tk.Label(output_frame, bg=output_color)
+humidity_label = tk.Label(output_frame, bg=output_color)
+photo_label = tk.Label(output_frame, bg=output_color)
 
 city_info_label.pack(pady=8)
 weather_label.pack()
